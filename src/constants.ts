@@ -5,5 +5,3 @@ export const HTTP_STATUSES = {
   BAD_REQUEST_400: 400,
   NOT_FOUND_404: 404,
 };
-
-export const a = {};

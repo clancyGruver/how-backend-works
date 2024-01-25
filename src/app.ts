@@ -1,6 +1,6 @@
 import express from 'express';
 import bodyParser from 'body-parser';
-import { coursesRouter } from './routes/courses.router';
+import { todoRouter } from './routes/todo.router';
 
 const jsonBodyParser = bodyParser.json();
 
@@ -8,4 +8,4 @@ export const app = express();
 
 app.use(jsonBodyParser);
 
-app.use('/courses', coursesRouter);
+app.use('/todo', todoRouter);
