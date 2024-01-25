@@ -6,34 +6,27 @@ import {
 import {
   RequestGetTodo, RequestPostTodo, RequestPutTodo, TodoParamsIdModel, TodoViewModel,
 } from '../dto/todo.dto';
-import { db } from '../db';
 import { todoToTodoViewModel } from '../mapper/todo.mapper';
+import { TodoFileRepository } from '../repository/todo/todoFile.repository';
 
 export const todoRouter = Router();
 
-todoRouter.get('/', (req: RequestWithQuery<RequestGetTodo>, res: Response<TodoViewModel[]>): void => {
-  let result = db.todo;
-
-  if (req.query.title) {
-    const queryTitle = req.query.title.toLowerCase();
-    result = result.filter(({ title }) => title.toLowerCase().includes(queryTitle));
-  }
-  res.json(result.map(todoToTodoViewModel));
+todoRouter.get('/', async (req: RequestWithQuery<RequestGetTodo>, res: Response<TodoViewModel[]>): Promise<void> => {
+  const todoList = await TodoFileRepository.findMany();
+  res.json(todoList.map(todoToTodoViewModel));
 });
 
-todoRouter.get('/:id', (req: RequestWithParams<TodoParamsIdModel>, res:Response<TodoViewModel>): void => {
+todoRouter.get('/:id', async (req: RequestWithParams<TodoParamsIdModel>, res:Response<TodoViewModel>): Promise<void> => {
   const paramId = +req.params.id;
-  const todo = db.todo.find(({ id }) => id === paramId);
-
-  if (!todo) {
+  try {
+    const todo = await TodoFileRepository.findById(paramId);
+    res.json(todoToTodoViewModel(todo));
+  } catch (e) {
     res.sendStatus(HTTP_STATUSES.NOT_FOUND_404);
-    return;
   }
-
-  res.json(todoToTodoViewModel(todo));
 });
 
-todoRouter.post('/', (req: RequestWithBody<RequestPostTodo>, res: Response<TodoViewModel>): void => {
+todoRouter.post('/', async (req: RequestWithBody<RequestPostTodo>, res: Response<TodoViewModel>): Promise<void> => {
   const { title, description } = req.body;
 
   if (!title || !description) {
@@ -41,54 +34,44 @@ todoRouter.post('/', (req: RequestWithBody<RequestPostTodo>, res: Response<TodoV
     return;
   }
 
-  const todo = {
-    id: +(new Date()),
+  const newTodo = {
     title,
     description,
     active: true,
     secret: (Math.random() * 100).toString(),
   };
 
-  db.todo.push(todo);
+  const todo = await TodoFileRepository.insert(newTodo);
 
   res
     .status(HTTP_STATUSES.CREATED_201)
     .json(todoToTodoViewModel(todo));
 });
 
-todoRouter.put('/:id', (req: RequestWithParamsAndBody<TodoParamsIdModel, RequestPutTodo>, res:Response<TodoViewModel>) => {
+todoRouter.put('/:id', async (req: RequestWithParamsAndBody<TodoParamsIdModel, RequestPutTodo>, res:Response<TodoViewModel>): Promise<void> => {
   const { title, description, active } = req.body;
-  const paramId = +req.params.id;
+  const id = +req.params.id;
 
   if (!title || !description || !active) {
     res.sendStatus(HTTP_STATUSES.BAD_REQUEST_400);
     return;
   }
 
-  const todo = db.todo.find(({ id }) => id === paramId);
-
-  if (!todo) {
+  try {
+    const todo = await TodoFileRepository.update(id, { title, description, active });
+    res.json(todoToTodoViewModel(todo));
+  } catch {
     res.sendStatus(HTTP_STATUSES.BAD_REQUEST_400);
-    return;
   }
-
-  todo.active = active;
-  todo.title = title;
-  todo.description = description;
-
-  res.json(todoToTodoViewModel(todo));
 });
 
-todoRouter.delete('/:id', (req: RequestWithParams<TodoParamsIdModel>, res:Response) => {
-  const paramId = +req.params.id;
+todoRouter.delete('/:id', async (req: RequestWithParams<TodoParamsIdModel>, res:Response): Promise<void> => {
+  const id = +req.params.id;
 
-  const todoIdx = db.todo.findIndex(({ id }) => id === paramId);
-
-  if (todoIdx === -1) {
+  try {
+    await TodoFileRepository.delete(id);
+    res.sendStatus(HTTP_STATUSES.NO_CONTENT_204);
+  } catch {
     res.sendStatus(HTTP_STATUSES.BAD_REQUEST_400);
   }
-
-  db.todo.splice(todoIdx, 1);
-
-  res.sendStatus(HTTP_STATUSES.NO_CONTENT_204);
 });
