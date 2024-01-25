@@ -1,8 +1,8 @@
 import { ITodo } from '../../db/Todo.interface';
 import { RequestPutTodo } from '../../dto/todo.dto';
 
-interface ISearchTerm extends Partial<Pick<ITodo, 'active' | 'description' | 'title'>> {}
-interface IInsertTodo extends Omit<ITodo, 'id'> {}
+export interface ISearchTerm extends Partial<Pick<ITodo, 'active' | 'description' | 'title'>> {}
+export interface IInsertTodo extends Omit<ITodo, 'id'> {}
 
 export interface ITodoRepository {
   findById: (id: number) => Promise<ITodo | never>;

@@ -1,5 +1,5 @@
 import { db } from '../../db';
-import { ITodoRepository } from './todo.repository.interface';
+import { ITodoRepository } from './Todo.repository.interface';
 
 export const TodoFileRepository: ITodoRepository = {
   async findById(id) {
