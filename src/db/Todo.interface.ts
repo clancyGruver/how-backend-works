@@ -6,5 +6,7 @@ export interface ITodo {
   /** Описание тудушки */
   description: string;
   /** Статус тудушки */
-  active: boolean
+  active: boolean;
+  /** Секретные данные только для внутреннего использования */
+  secret: string;
 }

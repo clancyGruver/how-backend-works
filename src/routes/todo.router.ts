@@ -5,8 +5,9 @@ import {
 } from '../types';
 import {
   RequestGetTodo, RequestPostTodo, RequestPutTodo, TodoParamsIdModel, TodoViewModel,
-} from '../models/todo.model';
+} from '../dto/todo.dto';
 import { db } from '../db';
+import { todoToTodoViewModel } from '../mapper/todo.mapper';
 
 export const todoRouter = Router();
 
@@ -17,7 +18,7 @@ todoRouter.get('/', (req: RequestWithQuery<RequestGetTodo>, res: Response<TodoVi
     const queryTitle = req.query.title.toLowerCase();
     result = result.filter(({ title }) => title.toLowerCase().includes(queryTitle));
   }
-  res.json(result);
+  res.json(result.map(todoToTodoViewModel));
 });
 
 todoRouter.get('/:id', (req: RequestWithParams<TodoParamsIdModel>, res:Response<TodoViewModel>): void => {
@@ -29,7 +30,7 @@ todoRouter.get('/:id', (req: RequestWithParams<TodoParamsIdModel>, res:Response<
     return;
   }
 
-  res.json(todo);
+  res.json(todoToTodoViewModel(todo));
 });
 
 todoRouter.post('/', (req: RequestWithBody<RequestPostTodo>, res: Response<TodoViewModel>): void => {
@@ -45,13 +46,14 @@ todoRouter.post('/', (req: RequestWithBody<RequestPostTodo>, res: Response<TodoV
     title,
     description,
     active: true,
+    secret: (Math.random() * 100).toString(),
   };
 
   db.todo.push(todo);
 
   res
     .status(HTTP_STATUSES.CREATED_201)
-    .json(todo);
+    .json(todoToTodoViewModel(todo));
 });
 
 todoRouter.put('/:id', (req: RequestWithParamsAndBody<TodoParamsIdModel, RequestPutTodo>, res:Response<TodoViewModel>) => {
@@ -74,7 +76,7 @@ todoRouter.put('/:id', (req: RequestWithParamsAndBody<TodoParamsIdModel, Request
   todo.title = title;
   todo.description = description;
 
-  res.json(todo);
+  res.json(todoToTodoViewModel(todo));
 });
 
 todoRouter.delete('/:id', (req: RequestWithParams<TodoParamsIdModel>, res:Response) => {
