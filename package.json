@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "dist/index.js",
+  "type": "commonjs",
   "scripts": {
     "dev": "nodemon --inspect dist/index.js",
     "start": "node dist/index.js",
