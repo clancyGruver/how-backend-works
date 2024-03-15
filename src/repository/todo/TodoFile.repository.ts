@@ -60,12 +60,12 @@ export const TodoFileRepository: ITodoRepository = {
   },
 
   async delete(id) {
-    const foundCourseIdx = db.todo.findIndex((todo) => todo.id === id);
+    const foundTodoIdx = db.todo.findIndex((todo) => todo.id === id);
 
-    if (foundCourseIdx < 0) {
+    if (foundTodoIdx < 0) {
       throw new Error(`Тудушка с id ${id} не найдена`);
     }
 
-    db.todo.splice(foundCourseIdx, 1);
+    db.todo.splice(foundTodoIdx, 1);
   },
 };
