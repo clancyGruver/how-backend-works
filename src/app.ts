@@ -1,11 +1,33 @@
-import express from 'express';
+import express, { type Express } from 'express';
 import bodyParser from 'body-parser';
+import { Server } from 'node:http';
 import { todoRouter } from './routes/todo.router';
 
-const jsonBodyParser = bodyParser.json();
+export class App {
+  app: Express;
 
-export const app = express();
+  server: Server;
 
-app.use(jsonBodyParser);
+  port: number;
 
-app.use('/todo', todoRouter);
+  constructor() {
+    this.app = express();
+    this.port = 3000;
+  }
+
+  useRoutes() {
+    this.app.use('/todo', todoRouter);
+  }
+
+  useMiddleware(): void {
+    const jsonBodyParser = bodyParser.json();
+    this.app.use(jsonBodyParser);
+  }
+
+  public async init() {
+    this.useRoutes();
+
+    this.server = this.app.listen(this.port);
+    console.log(`Server started on port ${this.port}`);
+  }
+}
