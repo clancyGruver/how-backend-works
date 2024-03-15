@@ -1,25 +1,28 @@
 import express, { type Express } from 'express';
 import bodyParser from 'body-parser';
 import { Server } from 'node:http';
-import { todoRouter } from './routes/todo.router';
 import { LoggerService } from './logger/logger.service';
+import { TodoController } from './todos/todos.controller';
 
 export class App {
   app: Express;
   server: Server;
   port: number;
   logger: LoggerService;
+  todoController: TodoController;
 
   constructor(
     logger: LoggerService,
+    todoController: TodoController,
   ) {
     this.app = express();
     this.port = 3000;
     this.logger = logger;
+    this.todoController = todoController;
   }
 
   useRoutes() {
-    this.app.use('/todo', todoRouter);
+    this.app.use('/todo', this.todoController.router);
   }
 
   useMiddleware(): void {

@@ -23,8 +23,10 @@ export abstract class BaseController {
     return this.send<T>(res, HttpStatuses.OK_200, message);
   }
 
-  public created(res: Response): ExpressReturnType {
-    return res.sendStatus(HttpStatuses.CREATED_201);
+  public created<T>(res: Response, message?: T): ExpressReturnType {
+    return message
+      ? this.send(res, HttpStatuses.CREATED_201, message)
+      : res.sendStatus(HttpStatuses.CREATED_201);
   }
 
   public notFound(res: Response): ExpressReturnType {
