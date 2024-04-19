@@ -5,9 +5,8 @@
   "main": "dist/index.js",
   "type": "commonjs",
   "scripts": {
-    "dev": "nodemon --inspect dist/index.js",
+    "dev": "nodemon",
     "start": "node dist/index.js",
-    "build:watch": "tsc -w",
     "build": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
