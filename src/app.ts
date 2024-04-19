@@ -23,11 +23,11 @@ export class App {
     this.port = 3000;
   }
 
-  useRoutes() {
+  useRoutes(): void {
     this.app.use('/todo', this.todoController.router);
   }
 
-  useExceptionFilters() {
+  useExceptionFilters(): void {
     this.app.use(this.exceptionFilter.catch.bind(this.exceptionFilter));
   }
 
@@ -36,7 +36,7 @@ export class App {
     this.app.use(jsonBodyParser);
   }
 
-  public async init() {
+  public async init(): Promise<void> {
     this.useMiddleware();
     this.useRoutes();
     this.useExceptionFilters();

@@ -27,7 +27,7 @@ export class TodoController extends BaseController implements ITodoController {
   async getAll(
     req: Request,
     res: Response<TodoViewModel[]>,
-  ) {
+  ): Promise<void> {
     const todoList = await TodoService.findMany();
     this.ok(res, todoList.map(todoToTodoViewModel));
   }
@@ -35,7 +35,7 @@ export class TodoController extends BaseController implements ITodoController {
   async getById(
     { params }: Request<{ id: string }>,
     res:Response<TodoViewModel>,
-  ) {
+  ): Promise<void> {
     const paramId = +params.id;
     try {
       const todo = await TodoService.findById(paramId);
@@ -48,7 +48,7 @@ export class TodoController extends BaseController implements ITodoController {
   async create(
     { body }: Request<{}, {}, TodoCreateDto>,
     res: Response<TodoViewModel>,
-  ) {
+  ): Promise<void> {
     const todo = await TodoService.insert(body);
 
     this.created(res, todoToTodoViewModel(todo));
@@ -57,7 +57,7 @@ export class TodoController extends BaseController implements ITodoController {
   async update(
     { body, params }: Request<{ id: string }, {}, TodoUpdateDto>,
     res:Response<TodoViewModel>,
-  ) {
+  ): Promise<void> {
     const id = +params.id;
 
     try {
@@ -68,7 +68,7 @@ export class TodoController extends BaseController implements ITodoController {
     }
   }
 
-  async delete({ params }: Request<{ id: string }>, res:Response) {
+  async delete({ params }: Request<{ id: string }>, res:Response): Promise<void> {
     const id = +params.id;
 
     try {

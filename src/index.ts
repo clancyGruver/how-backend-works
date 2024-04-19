@@ -8,6 +8,11 @@ import { TodoController } from './todos/todos.controller';
 import { TYPES } from './types';
 import { ITodoController } from './todos/todos.controller.interface';
 
+interface IBootstrapReturnType {
+  app: App;
+  appContainer: Container;
+}
+
 export const appBindings = new ContainerModule((bind: interfaces.Bind) => {
   bind<ILogger>(TYPES.ILogger).to(LoggerService);
   bind<IExceptionFilter>(TYPES.IExceptionFilter).to(ExceptionFilter);
@@ -15,7 +20,7 @@ export const appBindings = new ContainerModule((bind: interfaces.Bind) => {
   bind<App>(TYPES.Application).to(App);
 });
 
-function bootstrap() {
+function bootstrap(): IBootstrapReturnType {
   const appContainer = new Container();
   appContainer.load(appBindings);
 
