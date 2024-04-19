@@ -1,14 +1,11 @@
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import { BaseController } from '../common/base.controller';
-import {
-  RequestGetTodos, RequestPostTodo, RequestPutTodo, TodoParamsIdModel, TodoViewModel,
-} from '../dto/todo.dto';
+import { TodoViewModel } from '../dto/todo.dto';
 import { LoggerService } from '../logger/logger.service';
-import {
-  RequestWithBody, RequestWithParams, RequestWithParamsAndBody, RequestWithQuery,
-} from '../types';
 import { TodoService } from '../domain/todo.service';
 import { todoToTodoViewModel } from '../mapper/todo.mapper';
+import { TodoCreateDto } from './dto/todo.create.dto';
+import { TodoUpdateDto } from './dto/todo.update.dto';
 
 export class TodoController extends BaseController {
   constructor(loggerService: LoggerService) {
@@ -23,7 +20,7 @@ export class TodoController extends BaseController {
   }
 
   async getAll(
-    req: RequestWithQuery<RequestGetTodos>,
+    req: Request,
     res: Response<TodoViewModel[]>,
   ) {
     const todoList = await TodoService.findMany();
@@ -31,10 +28,10 @@ export class TodoController extends BaseController {
   }
 
   async getById(
-    req: RequestWithParams<TodoParamsIdModel>,
+    { params }: Request<{ id: string }>,
     res:Response<TodoViewModel>,
   ) {
-    const paramId = +req.params.id;
+    const paramId = +params.id;
     try {
       const todo = await TodoService.findById(paramId);
       this.ok(res, todoToTodoViewModel(todo));
@@ -44,30 +41,30 @@ export class TodoController extends BaseController {
   }
 
   async create(
-    req: RequestWithBody<RequestPostTodo>,
+    { body }: Request<{}, {}, TodoCreateDto>,
     res: Response<TodoViewModel>,
   ) {
-    const todo = await TodoService.insert(req.body);
+    const todo = await TodoService.insert(body);
 
     this.created(res, todoToTodoViewModel(todo));
   }
 
   async update(
-    req: RequestWithParamsAndBody<TodoParamsIdModel, RequestPutTodo>,
+    { body, params }: Request<{ id: string }, {}, TodoUpdateDto>,
     res:Response<TodoViewModel>,
   ) {
-    const id = +req.params.id;
+    const id = +params.id;
 
     try {
-      const todo = await TodoService.update(id, req.body);
+      const todo = await TodoService.update(id, body);
       res.json(todoToTodoViewModel(todo));
     } catch {
       this.badRequest(res);
     }
   }
 
-  async delete(req: RequestWithParams<TodoParamsIdModel>, res:Response) {
-    const id = +req.params.id;
+  async delete({ params }: Request<{ id: string }>, res:Response) {
+    const id = +params.id;
 
     try {
       await TodoService.delete(id);

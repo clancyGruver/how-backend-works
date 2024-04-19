@@ -6,7 +6,7 @@ export interface IControllerRoute {
   /** путь, который биндим */
   path: string;
   /** исполняемая функция */
-  func: (req: Request, res: Response, next: NextFunction) => void;
+  func: (req: Request<any>, res: Response, next: NextFunction) => void;
   /** HTTP метод */
   method: keyof Pick<Router, 'get' | 'post' | 'delete' | 'patch' | 'put'>;
 }
