@@ -9,9 +9,10 @@ import { TodoUpdateDto } from './dto/todo.update.dto';
 import { TYPES } from '../types';
 import { ILogger } from '../logger/logger.interface';
 import 'reflect-metadata';
+import { ITodoController } from './todos.controller.interface';
 
 @injectable()
-export class TodoController extends BaseController {
+export class TodoController extends BaseController implements ITodoController {
   constructor(@inject(TYPES.ILogger) private loggerService: ILogger) {
     super(loggerService);
     this.bindRoutes([
