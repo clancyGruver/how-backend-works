@@ -1,14 +1,18 @@
 import { Request, Response } from 'express';
+import { inject, injectable } from 'inversify';
 import { BaseController } from '../common/base.controller';
 import { TodoViewModel } from '../dto/todo.dto';
-import { LoggerService } from '../logger/logger.service';
 import { TodoService } from '../domain/todo.service';
 import { todoToTodoViewModel } from '../mapper/todo.mapper';
 import { TodoCreateDto } from './dto/todo.create.dto';
 import { TodoUpdateDto } from './dto/todo.update.dto';
+import { TYPES } from '../types';
+import { ILogger } from '../logger/logger.interface';
+import 'reflect-metadata';
 
+@injectable()
 export class TodoController extends BaseController {
-  constructor(loggerService: LoggerService) {
+  constructor(@inject(TYPES.ILogger) private loggerService: ILogger) {
     super(loggerService);
     this.bindRoutes([
       { path: '/', method: 'get', func: this.getAll },
